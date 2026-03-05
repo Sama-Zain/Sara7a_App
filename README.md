@@ -28,34 +28,35 @@ Sara7a App is a backend REST API built with **Node.js, Express, and MongoDB** th
 
 ---
 
-# 📂 Project Structur
-`
+## 📂 Project Structure
+
+```
 Sara7a_App
 │
 ├── Config
-│ └── dev.env
-
+│   └── dev.env
+│
 ├── Src
-│ ├── DB
-│ │ ├── Models
-│ │ │ └── user.model.js
-│ │ ├── connections.js
-│ │ └── database.repository.js
-
-│ ├── Modules
-│ │ ├── Auth
-│ │ │ ├── auth.controller.js
-│ │ │ └── auth.service.js
-
-│ │ └── User
-│ │ ├── user.controller.js
-│ │ └── user.service.js
-
-│ ├── Utils
-│ │ ├── enums
-│ │ ├── response
-│ │ └── security
-
+│   ├── DB
+│   │   ├── Models
+│   │   │   └── user.model.js
+│   │   ├── connections.js
+│   │   └── database.repository.js
+│
+│   ├── Modules
+│   │   ├── Auth
+│   │   │   ├── auth.controller.js
+│   │   │   └── auth.service.js
+│   │   │
+│   │   └── User
+│   │       ├── user.controller.js
+│   │       └── user.service.js
+│
+│   ├── Utils
+│   │   ├── enums
+│   │   ├── response
+│   │   └── security
+│
 ├── index.js
 └── package.json
-`
+```
