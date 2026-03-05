@@ -5,3 +5,4 @@ router.post("/signup",authService.signup); // http://localhost:3000/api/auth/sig
 router.post("/login",authService.login); // http://localhost:3000/api/auth/login
 
 export default router;
+

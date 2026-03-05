@@ -3,9 +3,18 @@ import { successResponse } from "../../Utils/response/succes.response.js";
 import User from "../../DB/Models/user.model.js";
 import * as database from "../../DB/database.repository.js";
 import { decryption } from "../../Utils/security/encryption.security.js";
+import { verifyToken } from "../../Utils/tokens/token.js";
 export const getprofile = async (req,res)=>{
-    const {id} = req.params;
-    const user= await database.findById({model:User,id});
+    const {token} = req.headers;
+
+    // verify token
+    const decoded = verifyToken(token);
+    if(!decoded){
+        return UnauthorizedException({message:"Invalid token"});
+    }
+    const user= await database.findById({model:User,id:decoded.id});
+    console.log(decoded);
+    
     if(!user){
         return NotFoundException({message:"User not found"});
     }

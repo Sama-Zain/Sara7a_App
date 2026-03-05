@@ -3,9 +3,9 @@ import { create, findOne } from "../../DB/database.repository.js";
 import { BadRequestException, ConflictException, NotFoundException } from "../../Utils/response/error.response.js";
 import { algorithmEnum } from "../../Utils/enums/security.enum.js";
 import { successResponse } from "../../Utils/response/succes.response.js";
-import { generateHash } from "../../Utils/security/hash.security.js";
-import { compareHash } from "../../Utils/security/hash.security.js";
+import { generateHash, compareHash } from "../../Utils/security/hash.security.js";
 import { encryption } from "../../Utils/security/encryption.security.js";
+import { generateToken } from "../../Utils/tokens/token.js";
 export const signup = async (req,res)=>{
     const {firstName,lastName,email,password,phoneNumber,gender,role} = req.body;
     // check if user already exists
@@ -38,6 +38,7 @@ export const login = async (req,res)=>{
     if(!isMatch){
         return BadRequestException({message:"Invalid email or password"});
     }
-    return successResponse({res,message:"User login successfully",data:user,statusCode:200});
+    const token = generateToken({id:user._id,email:user.email});
+    return successResponse({res,message:"User login successfully",data:{token},statusCode:200});
     
 }
