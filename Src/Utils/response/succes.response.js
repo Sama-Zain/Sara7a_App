@@ -1,8 +1,8 @@
 export const successResponse = (
-    res,
+    {res,
     statusCode = 200, 
     message = "Succes", 
-    data = undefined
+    data = undefined}
     ) => {
     return res.status(statusCode).json({message, data })
 }

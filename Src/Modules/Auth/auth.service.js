@@ -4,9 +4,10 @@ import { BadRequestException, ConflictException, NotFoundException } from "../..
 import { algorithmEnum } from "../../Utils/enums/security.enum.js";
 import { successResponse } from "../../Utils/response/succes.response.js";
 import { generateHash } from "../../Utils/security/hash.security.js";
-
+import { compareHash } from "../../Utils/security/hash.security.js";
+import { encryption } from "../../Utils/security/encryption.security.js";
 export const signup = async (req,res)=>{
-    const {firstName,lastName,email,password,gender,role} = req.body;
+    const {firstName,lastName,email,password,phoneNumber,gender,role} = req.body;
     // check if user already exists
     const user = await findOne({model:User,filter:{email}});
     if(user){
@@ -14,12 +15,15 @@ export const signup = async (req,res)=>{
     }
     // hash password
     const hashedPassword = await generateHash({plainText:password,algo:algorithmEnum.bcrypt});
+    // encrypt phone
+    const encryptedPhone = await encryption(phoneNumber);
     // create user
     const newuser = await create({
     model:User,
-    data:{firstName,lastName,email,password,gender,role}});
+    data:{firstName,lastName,email,password:hashedPassword,phoneNumber:encryptedPhone,gender,role}
+    });
 
-    return successResponse({message:"User created successfully",data:newuser,statusCode:201});
+    return successResponse({res,message:"User created successfully",data:newuser,statusCode:201});
 }
 
 // login user
@@ -34,6 +38,6 @@ export const login = async (req,res)=>{
     if(!isMatch){
         return BadRequestException({message:"Invalid email or password"});
     }
-    return successResponse({message:"User login successfully",data:user,statusCode:200});
+    return successResponse({res,message:"User login successfully",data:user,statusCode:200});
     
 }

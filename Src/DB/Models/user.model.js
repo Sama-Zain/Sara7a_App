@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
         return this.provider === ProviderEnum.System;
     },
     minLength:6,
-    maxLength:50
+    maxLength:100
    },
    DOB:Date,
    phoneNumber:String,

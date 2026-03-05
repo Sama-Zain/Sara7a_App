@@ -1,4 +1,4 @@
-export const findOne = async ({model, filter = {}, options = {}}) => {  
+export const findOne = async ({model, filter = {}, select="",options = {}}) => {  
      const doc = model.findOne(filter)
      if(select.length){
          doc.select(select)
