@@ -11,6 +11,6 @@ export const generateToken = (
         return jwt.sign(payload,secretKey,options);
     };
 
-export const verifyToken = (token,secretKey=JWT_SECRET_KEY)=>{
+export const verifyToken = async (token,secretKey=JWT_SECRET_KEY)=>{
     return jwt.verify(token,secretKey);
 }
