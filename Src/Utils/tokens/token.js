@@ -12,10 +12,10 @@ export const generateToken = (
         return jwt.sign(payload,secretKey,options);
     };
 
-export const verifyToken = async (token,secretKey=JWT__USER_SECRET_KEY)=>{
+export const verifyToken =  ({token,secretKey=JWT__USER_SECRET_KEY})=>{
     return jwt.verify(token,secretKey);
 }
-export const getsignature = ({signatureLevel= SignatureEnum.User})=>{
+export const getsignature =  async({signatureLevel= SignatureEnum.User})=>{
     let signature={accessSignature:undefined,refreshSignature:undefined};
      switch(signatureLevel){ 
         case SignatureEnum.User:
@@ -33,8 +33,8 @@ export const getsignature = ({signatureLevel= SignatureEnum.User})=>{
     } 
     return signature;  
 }
-export const getNewLoginCredientials = (user,signatureLevel)=>{
-    let signature=getsignature({
+export const getNewLoginCredientials = async (user,signatureLevel)=>{
+    let signature=await getsignature({
         signatureLevel:
         user.role != RoleEnum.Admin? SignatureEnum.User : SignatureEnum.Admin
  } );

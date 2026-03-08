@@ -6,7 +6,6 @@ import { successResponse } from "../../Utils/response/succes.response.js";
 import { generateHash, compareHash } from "../../Utils/security/hash.security.js";
 import { encryption } from "../../Utils/security/encryption.security.js";
 import { generateToken, getNewLoginCredientials, verifyToken } from "../../Utils/tokens/token.js";
-import {  REFRESH__USERTOKEN, REFRESH_TOKEN_EXPIRESIN } from "../../../Config/config.service.js";
 export const signup = async (req, res) => {
     const { firstName, lastName, email, password, phoneNumber, gender, role } = req.body;
     // check if user already exists
@@ -39,33 +38,26 @@ export const login = async (req, res) => {
         return BadRequestException({ message: "Invalid email or password" });
     }
     const credentials = await getNewLoginCredientials(user);
-    return successResponse({ res, message: "User login successfully", data: { token: credentials.accessToken, refreshToken: credentials.refreshToken }, statusCode: 200 });
+    return successResponse({ res, message: "User login successfully", data: { accessTokentoken: credentials.accessToken, refreshToken: credentials.refreshToken }, statusCode: 200 });
 }
 export const refreshToken = async (req, res) => {
-
     const refreshToken = req.headers.refreshtoken;
-
     const decoded = await verifyToken(refreshToken, REFRESH_TOKEN);
-
     if (!decoded) {
         return BadRequestException({ message: "Invalid refresh token" });
     }
-
     const user = await findById({
         model: User,
         id: decoded.id
     });
-
     if (!user) {
         return NotFoundException({ message: "User not found" });
     }
-
     const accessToken = generateToken({
         id: user._id,
         email: user.email
     },
 );
-
     return successResponse({
         res,
         message: "Token refreshed successfully",
