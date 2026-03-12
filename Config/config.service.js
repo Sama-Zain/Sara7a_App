@@ -19,3 +19,6 @@ export const REFRESH__ADMINTOKEN = process.env.TOKEN_REFRESH_ADMIN_SECRET_KEY;
 // EXPIRESIN
 export const EXPIRESIN = parseInt(process.env.ACCESS_EXPIRES);
 export const REFRESH_TOKEN_EXPIRESIN = parseInt(process.env.REFRESH_EXPIRES);
+
+//SOCAIL API
+export const CLIENT_ID = process.env.CLIENT_ID;

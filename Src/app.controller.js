@@ -2,8 +2,9 @@ import connectDB from "./DB/connections.js";
 import {authRouter, userRouter} from "./Modules/index.js";
 import { globalErrorHandler, NotFoundException } from "./Utils/response/error.response.js";
 import { successResponse } from "./Utils/response/succes.response.js";
+import cors from "cors";
 const bootstrap = async (app,express) => {
-    app.use(express.json());
+    app.use(express.json(),cors());
     await connectDB();
     app.get("/",(req,res)=>{
         return successResponse(res,201,"Welcome to Sara7a API")
