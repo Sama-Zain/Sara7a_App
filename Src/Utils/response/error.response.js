@@ -50,6 +50,7 @@ export const ForbiddenException = (
 export const globalErrorHandler = (error,req,res,next) =>{
     const statusCode = error.statusCode || 500;
     const message = error.message || "Internal Server Error";
+    const extra = error.extra;
     return res.status(statusCode)
-   .json({message: error.message,stack: error.stack , statusCode});
+   .json({message: error.message,stack: error.stack , statusCode, extra});
 };

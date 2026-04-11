@@ -19,7 +19,7 @@ import {
 } from "../../Utils/tokens/token.js";
 import { OAuth2Client } from "google-auth-library";
 import { CLIENT_ID } from "../../../Config/config.service.js";
-
+// signup user
 export const signup = async (req, res) => {
   const { firstName, lastName, email, password, phoneNumber, gender, role } =
     req.body;
@@ -52,10 +52,12 @@ export const signup = async (req, res) => {
   return successResponse({
     res,
     message: "User created successfully",
-    data: newuser,
+    data: { newuser },
     statusCode: 201,
+
   });
 };
+
 // login user
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -133,7 +135,7 @@ export const socialLogin = async (req, res) => {
       return successResponse({
         res,
         message: "User login successfully",
-        data: {credentials},
+        data: { credentials },
         statusCode: 200,
       });
     }

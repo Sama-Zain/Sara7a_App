@@ -60,5 +60,5 @@ userSchema.virtual("userName").set(function (value) {
   .get(function () {
     return `${this.firstName} ${this.lastName}`;
   });
-const User = mongoose.model("User",userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 export default User;

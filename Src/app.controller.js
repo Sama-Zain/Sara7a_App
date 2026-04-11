@@ -1,22 +1,24 @@
 import connectDB from "./DB/connections.js";
-import {authRouter, userRouter} from "./Modules/index.js";
-import { globalErrorHandler, NotFoundException } from "./Utils/response/error.response.js";
+import { authRouter, userRouter } from "./Modules/index.js";
+import {
+  globalErrorHandler,
+  NotFoundException,
+} from "./Utils/response/error.response.js";
 import { successResponse } from "./Utils/response/succes.response.js";
 import cors from "cors";
-const bootstrap = async (app,express) => {
-    app.use(express.json(),cors());
-    await connectDB();
-    app.get("/",(req,res)=>{
-        return successResponse(res,201,"Welcome to Sara7a API")
-    })
-
-    app.use("/api/auth",authRouter);
-    app.use("/api/user",userRouter);
-    
-    app.all("/*dummy",(req,res)=>{
-        throw NotFoundException({message:"Not Found Handler"})
-    })
-    app.use(globalErrorHandler);
-
-}
+import path from "path";
+const bootstrap = async (app, express) => {
+  app.use(express.json(), cors());
+  await connectDB();
+  app.get("/", (req, res) => {
+    return successResponse(res, 201, "Welcome to Sara7a API");
+  });
+  app.use("/uploads", express.static(path.resolve("Src/uploads")));
+  app.use("/api/auth", authRouter);
+  app.use("/api/user", userRouter);
+  app.all("/*dummy", (req, res) => {
+    throw NotFoundException({ message: "Not Found Handler" });
+  });
+  app.use(globalErrorHandler);
+};
 export default bootstrap;
