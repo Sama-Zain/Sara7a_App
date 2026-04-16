@@ -61,7 +61,7 @@ export const findOneAndUpdate = async ({model, filter={}, update, options = {}})
         filter,
          {...update, $inc:{__v:1}},
         {
-            new:true,
+            returnDocument: "after",
             runValidators:true,
             ...options
         }
@@ -72,7 +72,7 @@ export const findByIdAndUpdate = async ({model, id="", update, options = {}}) =>
         id,
          {...update, $inc:{__v:1}},
         {
-            new:true,
+            returnDocument: "after",
             runValidators:true,
             ...options
         }

@@ -22,6 +22,17 @@ export const generalFields = {
     phoneNumber: joi.string().pattern(/^01[0125][0-9]{8}$/),
     gender: joi.string().valid(...Object.values(GenderEnum)),
     role: joi.string().valid(...Object.values(RoleEnum)),
+    file:{
+      fieldname: joi.string(),
+      originalname: joi.string(),
+      mimetype: joi.string(),
+      encoding: joi.string(),
+      size: joi.number().positive(),
+      destination: joi.string(),
+      filename: joi.string(),
+      path: joi.string(),
+      finalPath: joi.string(),
+    },
     // custom validation
     id: joi.string().custom((value, helper) => {
       return (

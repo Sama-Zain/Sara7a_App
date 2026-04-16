@@ -2,7 +2,7 @@
 import { findByIdAndUpdate } from "../../DB/database.repository.js";
 import { successResponse } from "../../Utils/response/succes.response.js";
 import { decryption } from "../../Utils/security/encryption.security.js";
-import  User  from "../../DB/models/user.model.js"; 
+import  User  from "../../DB/Models/user.model.js";
 export const getprofile = async (req, res) => {
   const user = req.user; 
   if(user){
@@ -21,6 +21,21 @@ export const fileUpload = async (req, res) => {
         model: User,
         id: req.user._id,
         update: { profilePicture: req.file.finalPath },
+    });
+   return successResponse({
+    res,
+    message: "File uploaded successfully",
+    data: user,
+    statusCode: 200,
+  });
+};
+
+
+export const coverUpload = async (req, res) => {
+  const user = await findByIdAndUpdate({
+        model: User,
+        id: req.user._id,
+        update: { coverPictures: req.files?.map((file) => file.finalPath) },
     });
    return successResponse({
     res,

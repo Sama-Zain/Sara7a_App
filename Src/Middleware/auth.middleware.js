@@ -6,7 +6,8 @@ import {
 } from "../Utils/response/error.response.js";
 import { getsignature, verifyToken } from "../Utils/tokens/token.js";
 import User from "../DB/Models/user.model.js";
-import { findById } from "../DB/database.repository.js";
+import { findById, findOne } from "../DB/database.repository.js";
+import Token from "../DB/Models/token.model.js";
 // decode token---> get user and decoded token
 export const decodedToken = async ({
   authorization,
@@ -16,37 +17,39 @@ export const decodedToken = async ({
     throw BadRequestException({ message: "Authorization header is required" });
   }
   const [Bearer, token] = authorization.split(" ");
-  if (!Bearer || !token)
-    throw BadRequestException({ message: "Invalid token" });
-  //  console.log(Bearer);
-
-  // find signature by bearer
-  let signature = await getsignature({ signatureLevel: Bearer }); // user or admin
-  console.log(Bearer, signature);
-
+  if (!Bearer || !token) throw BadRequestException({ message: "Invalid token" });
+  let signature = await getsignature({ signatureLevel: Bearer });
   const decoded = verifyToken({
     token,
-    secretKey:
-      tokenType === TokenTypeEnum.Access
-        ? signature.accessSignature
-        : signature.refreshSignature,
+    secretKey: tokenType === TokenTypeEnum.Access 
+      ? signature.accessSignature 
+      : signature.refreshSignature,
   });
-  // find user by id
-  const user = await findById({ model: User, id: decoded.payload?._id });
+  const jti = decoded.jti || decoded.options?.jwtid;
+  if (jti) {
+    const isRevoked = await Token.findOne({ jti }); 
+    if (isRevoked) {
+      throw UnauthorizedException({ message: "Token revoked, please login again" });
+    }
+  }
+  const user = await User.findById(decoded._id || decoded.payload?._id);
   if (!user) {
     throw NotFoundException({ message: "User not found" });
+  }
+  const changeTime = parseInt(user.changeCredientialsTime?.getTime());
+  if (changeTime > decoded.iat) {
+    throw UnauthorizedException({ message: "Token expired " });
   }
   return { user, decoded };
 };
 // middleware for authentication
-export const authentication = ({
-  tokenType = TokenTypeEnum.Access,
-}) => {
+export const authentication = ({ tokenType = TokenTypeEnum.Access }) => {
   return async (req, res, next) => {
-    const { user, decoded } = (await decodedToken({
-      authorization: req.headers.authorization,
-      tokenType,
-    })) || {};
+    const { user, decoded } =
+      (await decodedToken({
+        authorization: req.headers.authorization,
+        tokenType,
+      })) || {};
     req.user = user;
     req.decoded = decoded;
     return next();

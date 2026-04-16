@@ -3,6 +3,8 @@ import * as authService from "./auth.service.js";
 import * as authValidation from "./auth.validation.js";
 import { validation } from "../../Middleware/validation.middleware.js";
 import { localFile } from "../../Utils/multer/local.multer.js";
+import { TokenTypeEnum } from "../../Utils/enums/user.enum.js";
+import { authentication } from "../../Middleware/auth.middleware.js";
 const router = Router();
 router.post(
   "/signup",
@@ -17,5 +19,10 @@ router.post(
 ); // http://localhost:3000/api/auth/login
 router.post("/refresh-token", authService.refreshToken); // http://localhost:3000/api/auth/refresh-token
 router.post("/social-login", authService.socialLogin); // http://localhost:3000/api/auth/social-login
-
+router.post(
+  "/logout",
+  authentication({ tokenType: TokenTypeEnum.Access }),
+  authService.logout,
+); // http://localhost:3000/api/auth/logout
 export default router;
+

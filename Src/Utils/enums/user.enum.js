@@ -1,3 +1,4 @@
+
 export const GenderEnum = {
     Male:0,
     Female:1
@@ -19,3 +20,7 @@ export const ProviderEnum = {
     Google:0,
     System:1
 }
+export const logoutEnum = {
+    logoutFromAll : "logoutFromAll",
+    logout: "logout"
+};

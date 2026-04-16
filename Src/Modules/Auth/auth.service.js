@@ -1,5 +1,10 @@
 import User from "../../DB/Models/user.model.js";
-import { create, findById, findOne } from "../../DB/database.repository.js";
+import {
+  create,
+  findById,
+  findOne,
+  updateOne,
+} from "../../DB/database.repository.js";
 import {
   BadRequestException,
   ConflictException,
@@ -19,6 +24,8 @@ import {
 } from "../../Utils/tokens/token.js";
 import { OAuth2Client } from "google-auth-library";
 import { CLIENT_ID } from "../../../Config/config.service.js";
+import { logoutEnum } from "../../Utils/enums/user.enum.js";
+import Token from "../../DB/Models/token.model.js";
 // signup user
 export const signup = async (req, res) => {
   const { firstName, lastName, email, password, phoneNumber, gender, role } =
@@ -48,16 +55,13 @@ export const signup = async (req, res) => {
       role,
     },
   });
-
   return successResponse({
     res,
     message: "User created successfully",
     data: { newuser },
     statusCode: 201,
-
   });
 };
-
 // login user
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -110,6 +114,7 @@ export const refreshToken = async (req, res) => {
     statusCode: 200,
   });
 };
+// verify google account
 async function verifyGoogleAccount({ idToken }) {
   const client = new OAuth2Client();
   const ticket = await client.verifyIdToken({
@@ -157,5 +162,49 @@ export const socialLogin = async (req, res) => {
     message: "User created successfully",
     data: { credentials },
     statusCode: 200,
+  });
+};
+// logout user
+export const logout = async (req, res) => {
+  const { flag } = req.body;
+  let status = 200;
+  const jti = req.decoded?.jti;
+  const exp = req.decoded?.exp;
+  switch (flag) {
+    case logoutEnum.logout:
+      if (!jti) {
+        return res
+          .status(400)
+          .json({
+            message: "Invalid Token Payload: jti missing",
+            debug: req.decoded,
+          });
+      }
+      await create({
+        model: Token,
+        data: {
+          userId: req.user._id || req.decoded.payload?._id,
+          jti: jti,
+          expiresIn: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        },
+      });
+      status = 201;
+      break;
+    case logoutEnum.logoutFromAll:
+      await updateOne({
+        model: User,
+        filter: { _id: req.user._id },
+        update: { changeCredientialsTime: Date.now() },
+      });
+      status = 200;
+      break;
+    default:
+      status = 400;
+      break;
+  }
+  return successResponse({
+    res,
+    message: "User logged out successfully",
+    statusCode: status,
   });
 };
