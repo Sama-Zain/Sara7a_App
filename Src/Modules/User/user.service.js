@@ -1,46 +1,65 @@
-
-import { findByIdAndUpdate } from "../../DB/database.repository.js";
+import {
+  findByIdAndUpdate,
+  findOneAndDelete,
+} from "../../DB/database.repository.js";
 import { successResponse } from "../../Utils/response/succes.response.js";
 import { decryption } from "../../Utils/security/encryption.security.js";
-import  User  from "../../DB/Models/user.model.js";
+import User from "../../DB/Models/user.model.js";
+import { NotFoundException } from "../../Utils/response/error.response.js";
 export const getprofile = async (req, res) => {
-  const user = req.user; 
-  if(user){
-    user.phoneNumber=  await decryption(user.phoneNumber);
+  const user = req.user;
+  if (user) {
+    user.phoneNumber = await decryption(user.phoneNumber);
   }
   return successResponse({
     res,
     message: "User found",
-    data: user, 
+    data: user,
     statusCode: 200,
   });
 };
 
 export const fileUpload = async (req, res) => {
   const user = await findByIdAndUpdate({
-        model: User,
-        id: req.user._id,
-        update: { profilePicture: req.file.finalPath },
-    });
-   return successResponse({
+    model: User,
+    id: req.user._id,
+    update: { profilePicture: req.file.finalPath },
+  });
+  return successResponse({
     res,
     message: "File uploaded successfully",
     data: user,
     statusCode: 200,
   });
 };
-
-
 export const coverUpload = async (req, res) => {
   const user = await findByIdAndUpdate({
-        model: User,
-        id: req.user._id,
-        update: { coverPictures: req.files?.map((file) => file.finalPath) },
-    });
-   return successResponse({
+    model: User,
+    id: req.user._id,
+    update: { coverPictures: req.files?.map((file) => file.finalPath) },
+  });
+  return successResponse({
     res,
     message: "File uploaded successfully",
     data: user,
     statusCode: 200,
   });
 };
+
+export const deleteUser = async (req, res) => {
+  const user = await findOneAndDelete({
+    model: User,
+    filter: { _id: req.params.userId },
+    // freezedAt {$exists: true},
+  });
+  if (!user) {
+    throw NotFoundException({ message: "User not found" });
+  }
+    return successResponse({
+        res,
+        message: "User deleted successfully",
+        data: {user , deletedCount: 1},
+        statusCode: 200,
+      })
+};
+

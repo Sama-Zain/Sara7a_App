@@ -39,6 +39,11 @@ export const generalFields = {
         Types.ObjectId.isValid(value) || helper.message("Invalid ObjectId")
       );
     }),
+    content: joi.string().min(2).max(500).trim().message({
+      "any.required": "Content is required",
+      "string.min": "Content must be at least 2 characters",
+      "string.max": "Content must be less than 500 characters",
+    })
 };
 export const validation = (schema) => {
   return (req, res, next) => {

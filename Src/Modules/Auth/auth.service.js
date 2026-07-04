@@ -26,6 +26,8 @@ import { OAuth2Client } from "google-auth-library";
 import { CLIENT_ID } from "../../../Config/config.service.js";
 import { logoutEnum } from "../../Utils/enums/user.enum.js";
 import Token from "../../DB/Models/token.model.js";
+import { emailSubject, sendEmail } from "../../Utils/email/email.js";
+import { emailEmitter } from "../../Utils/email/email.events.js";
 // signup user
 export const signup = async (req, res) => {
   const { firstName, lastName, email, password, phoneNumber, gender, role } =
@@ -42,6 +44,14 @@ export const signup = async (req, res) => {
   });
   // encrypt phone
   const encryptedPhone = await encryption(phoneNumber);
+  // create otp 6digit
+  const otp = Math.floor(100000 + Math.random() * 900000); //random number between 100000 and 900000
+  console.log(otp);
+  
+  const hashedOTP = await generateHash({
+    plainText: otp.toString(),
+    algo: algorithmEnum.bcrypt,
+  });
   // create user
   const newuser = await create({
     model: User,
@@ -53,8 +63,11 @@ export const signup = async (req, res) => {
       phoneNumber: encryptedPhone,
       gender,
       role,
+      confirmEmailOTP: hashedOTP,
     },
   });
+  // call event
+    emailEmitter.emit("confirmEmail", { to: email, firstName, otp: otp });
   return successResponse({
     res,
     message: "User created successfully",
@@ -65,7 +78,13 @@ export const signup = async (req, res) => {
 // login user
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  const user = await findOne({ model: User, filter: { email } });
+  const user = await findOne({
+    model: User, filter: {
+      email,
+      // freezedAt: {$exists: false}
+      // confirmEmail: {$exists: true}
+    }
+  });
   if (!user) {
     return NotFoundException({ message: "User not found" });
   }

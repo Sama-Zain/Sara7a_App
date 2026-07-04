@@ -48,10 +48,11 @@ const userSchema = new mongoose.Schema(
       enum: Object.values(ProviderEnum),
       default: ProviderEnum.System,
     },
+    confirmEmailOTP: String,
     confirmeEmail: Date,
     profilePicture: String,
-    coverPictures: [String],
     changeCredientialsTime: Date,
+    coverPictures: [String],
   },
   {
     timestamps: true,

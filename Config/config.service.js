@@ -22,3 +22,10 @@ export const REFRESH_TOKEN_EXPIRESIN = parseInt(process.env.REFRESH_EXPIRES);
 
 //SOCAIL API
 export const CLIENT_ID = process.env.CLIENT_ID;
+
+//cors
+export const WHITE_LIST=process.env.WHITE_LIST;
+
+// EMAIL
+export const User_Email = process.env.USER_EMAIL;
+export const User_Password = process.env.USER_PASSWORD;

@@ -28,15 +28,17 @@ export const verifyToken = ({ token, secretKey = JWT__USER_SECRET_KEY }) => {
 
 export const getsignature = async ({ signatureLevel = SignatureEnum.User }) => {
   let signature = { accessSignature: undefined, refreshSignature: undefined };
-  switch (signatureLevel) {
-    case SignatureEnum.User:
-      signature.accessSignature = JWT__USER_SECRET_KEY;
-      signature.refreshSignature = REFRESH__USERTOKEN;
-      break;
-    case SignatureEnum.Admin:
+  const level = String(signatureLevel).toLowerCase(); 
+  switch (level) {
+    case "admin":
+    case String(SignatureEnum.Admin).toLowerCase():
       signature.accessSignature = JWT__ADMIN_SECRET_KEY;
       signature.refreshSignature = REFRESH__ADMINTOKEN;
       break;
+
+    case "user":
+    case "bearer": 
+    case String(SignatureEnum.User).toLowerCase():
     default:
       signature.accessSignature = JWT__USER_SECRET_KEY;
       signature.refreshSignature = REFRESH__USERTOKEN;

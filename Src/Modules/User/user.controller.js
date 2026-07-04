@@ -9,17 +9,17 @@ import { filevalidation, localFile } from "../../Utils/multer/local.multer.js";
 import { validation } from "../../Middleware/validation.middleware.js";
 import { updatedCoverSchema, updatedProfileSchema } from "./user.validation.js";
 const router = Router();
-
+// get user profile
 router.get(
   "/",
   authentication({
     tokenType: TokenTypeEnum.Access,
   }),
-  authorization({ role: [RoleEnum.User] }),
+  authorization({ role: [RoleEnum.User, RoleEnum.Admin] }),
   userService.getprofile,
 ); // http://localhost:3000/api
 
-
+// update user profile
 router.patch(
   "/update-profile",
   authentication({
@@ -35,7 +35,7 @@ router.patch(
 ); // http://localhost:3000/api/user/update-profile
 
 
-
+// update user cover
 router.patch(
   "/update-cover",
   authentication({
@@ -49,5 +49,15 @@ router.patch(
   validation(updatedCoverSchema),
   userService.coverUpload,
 ); // http://localhost:3000/api/user/update-cover
+
+// delete user 
+router.delete(
+  "/delete/:userId",
+  authentication({
+    tokenType: TokenTypeEnum.Access,
+  }),
+  authorization({ role: [RoleEnum.Admin] }),
+  userService.deleteUser,
+);  // http://localhost:3000/api/user/delete 
 export default router;
 
